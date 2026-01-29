@@ -4,6 +4,8 @@ A specialized *OCR Model* using a **CNN** *(Convolutional Neural Network)* for s
 
 **todo:**
 
-train model and link cnn to a ffn architecture (https://huggingface.co/datasets/lukbl/LaTeX-OCR-dataset) or (https://huggingface.co/datasets/OleehyO/latex-formulas)
-link my latex sem analyzer to this project
-better interface api for autoregressive llms
+- train model and link cnn to a ffn architecture (https://huggingface.co/datasets/lukbl/LaTeX-OCR-dataset) or (https://huggingface.co/datasets/OleehyO/latex-formulas)
+
+- link my latex sem analyzer to this project
+
+- better interface api for autoregressive llms
