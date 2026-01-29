@@ -106,4 +106,45 @@ namespace Kernels
         -1, 2, -1,
         -1, 2, -1,
         -1, 2, -1};
+
+    // ====== COLLECTIONS ======
+
+    const std::vector<std::vector<int>> all_kernels = {
+        sobel_x,
+        sobel_y,
+        prewitt_x,
+        prewitt_y,
+        scharr_x,
+        scharr_y,
+        laplacian_4,
+        laplacian_8,
+        box_blur_3x3,
+        gaussian_3x3,
+        sharpen,
+        edge_enhance,
+        identity,
+        emboss,
+        outline,
+        ridge_horizontal,
+        ridge_vertical};
+
+    const std::vector<std::vector<int>> edge_detection_kernels = {
+        sobel_x,
+        sobel_y,
+        prewitt_x,
+        prewitt_y,
+        scharr_x,
+        scharr_y,
+        laplacian_4,
+        laplacian_8};
+
+    const std::vector<std::vector<int>> blur_kernels = {
+        box_blur_3x3,
+        gaussian_3x3,
+        gaussian_5x5};
+
+    const std::vector<std::vector<int>> sharpen_kernels = {
+        sharpen,
+        edge_enhance,
+        unsharp_mask};
 }

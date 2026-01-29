@@ -37,30 +37,16 @@ Tensor nn_interface::convolute_image(const std::string &image_path, size_t convo
 /// @return Vector of output feature maps (one per randomly selected kernel)
 std::vector<Tensor> nn_interface::convolute_tensor(const Tensor &input_tensor, size_t convolutions, size_t stride)
 {
-    std::vector<std::vector<int>> available_kernels = {
-        Kernels::sobel_x,
-        Kernels::sobel_y,
-        Kernels::prewitt_x,
-        Kernels::prewitt_y,
-        Kernels::laplacian_4,
-        Kernels::box_blur_3x3,
-        Kernels::gaussian_3x3,
-        Kernels::sharpen,
-        Kernels::edge_enhance,
-        Kernels::identity,
-        Kernels::emboss,
-        Kernels::outline};
-
     std::vector<Tensor> results(convolutions);
     std::mt19937 &rng = nn_utility::get_rng();
-    std::uniform_int_distribution<size_t> dist(0, available_kernels.size() - 1);
+    std::uniform_int_distribution<size_t> dist(0, Kernels::all_kernels.size() - 1);
 
 #pragma omp parallel for
     for (size_t i = 0; i < convolutions; ++i)
     {
         size_t kernel_idx = dist(rng);
 
-        const auto &kernel = available_kernels[kernel_idx];
+        const auto &kernel = Kernels::all_kernels[kernel_idx];
         size_t kernel_size = static_cast<size_t>(std::sqrt(kernel.size()));
 
         results[i] = convolutional_neural_network::convolve_2d(

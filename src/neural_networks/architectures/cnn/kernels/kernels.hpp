@@ -37,6 +37,20 @@ namespace Kernels
     extern const std::vector<int> outline;
     extern const std::vector<int> ridge_horizontal;
     extern const std::vector<int> ridge_vertical;
+
+    // ====== COLLECTIONS ======
+
+    /// @brief All available kernels
+    extern const std::vector<std::vector<int>> all_kernels;
+
+    /// @brief Edge detection kernels only
+    extern const std::vector<std::vector<int>> edge_detection_kernels;
+
+    /// @brief Blurring kernels only
+    extern const std::vector<std::vector<int>> blur_kernels;
+
+    /// @brief Sharpening kernels only
+    extern const std::vector<std::vector<int>> sharpen_kernels;
 }
 
 #endif
