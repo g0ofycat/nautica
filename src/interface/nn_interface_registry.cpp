@@ -16,11 +16,12 @@ Tensor nn_interface::convolute_image(const std::string &image_path, size_t convo
     Tensor image_tensor = image_extractor::load_image(image_path);
     image_extractor::normalize(image_tensor);
 
-    std::vector<Tensor> filters;
+    std::vector<Tensor> filters(convolutions);
 
+#pragma omp parallel for
     for (size_t i = 0; i < convolutions; ++i)
     {
-        filters.push_back(Tensor::random_normal({3, 3, 3}));
+        filters[i] = Tensor::random_normal({3, 3, 3});
     }
 
     return convolutional_neural_network::convolve_3d(image_tensor, filters, 1);

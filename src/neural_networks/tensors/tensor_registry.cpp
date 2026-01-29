@@ -4,7 +4,11 @@
 #include <functional>
 #include <random>
 #include <numeric>
+#include <omp.h>
+
+#ifdef __AVX2__
 #include <immintrin.h>
+#endif
 
 #include "./tensor.hpp"
 #include "../utility/nn_utility.hpp"
@@ -134,6 +138,7 @@ Tensor Tensor::matmul(const Tensor &a, const Tensor &b, size_t block_size)
     Tensor result(std::vector<size_t>{M, N});
     result.fill(0.0);
 
+#pragma omp parallel for
     for (size_t ii = 0; ii < M; ii += block_size)
     {
         for (size_t jj = 0; jj < N; jj += block_size)
@@ -289,6 +294,7 @@ Tensor Tensor::flatten(size_t start_dim) const
     Tensor out;
     out.data = data;
     out.shape = new_shape;
+
     out.compute_strides();
 
     return out;
@@ -343,6 +349,7 @@ Tensor Tensor::operator+(const Tensor &other) const
     size_t n = numel();
     size_t i = 0;
 
+#ifdef __AVX2__
     for (; i + 4 <= n; i += 4)
     {
         __m256d a = _mm256_loadu_pd(&data[i]);
@@ -350,6 +357,7 @@ Tensor Tensor::operator+(const Tensor &other) const
         __m256d r = _mm256_add_pd(a, b);
         _mm256_storeu_pd(&result.data[i], r);
     }
+#endif
 
     for (; i < n; ++i)
         result.data[i] = data[i] + other.data[i];
@@ -369,6 +377,7 @@ Tensor Tensor::operator*(const Tensor &other) const
     size_t n = numel();
     size_t i = 0;
 
+#ifdef __AVX2__
     for (; i + 4 <= n; i += 4)
     {
         __m256d a = _mm256_loadu_pd(&data[i]);
@@ -376,6 +385,7 @@ Tensor Tensor::operator*(const Tensor &other) const
         __m256d r = _mm256_mul_pd(a, b);
         _mm256_storeu_pd(&result.data[i], r);
     }
+#endif
 
     for (; i < n; ++i)
         result.data[i] = data[i] * other.data[i];

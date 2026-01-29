@@ -1,5 +1,11 @@
 #include <cstddef>
+#include <cstring>
 #include <vector>
+#include <omp.h>
+
+#ifdef __AVX2__
+#include <immintrin.h>
+#endif
 
 #include "./cnn.hpp"
 #include "./kernels/kernels.hpp"
@@ -67,6 +73,12 @@ double convolutional_neural_network::apply_filter_3d(const Tensor &input, const 
     size_t half_h = kernel_h / 2;
     size_t half_w = kernel_w / 2;
 
+    const double *input_data = input.data.data();
+    const double *filter_data = filter.data.data();
+
+    size_t input_w = input.shape[1];
+    size_t input_stride = input_w * channels;
+
     double result = 0.0;
 
     for (size_t k_row = 0; k_row < kernel_h; ++k_row)
@@ -79,12 +91,28 @@ double convolutional_neural_network::apply_filter_3d(const Tensor &input, const 
             if (in_row >= 0 && in_row < static_cast<int>(input.shape[0]) &&
                 in_col >= 0 && in_col < static_cast<int>(input.shape[1]))
             {
-                for (size_t c = 0; c < channels; ++c)
+                size_t input_offset = in_row * input_stride + in_col * channels;
+                size_t filter_offset = (k_row * kernel_w + k_col) * channels;
+
+                size_t c = 0;
+
+#ifdef __AVX2__
+                __m256d sum = _mm256_setzero_pd();
+
+                for (; c + 4 <= channels; c += 4)
                 {
-                    result += input.at({static_cast<size_t>(in_row),
-                                        static_cast<size_t>(in_col),
-                                        c}) *
-                              filter.at({k_row, k_col, c});
+                    __m256d in = _mm256_loadu_pd(&input_data[input_offset + c]);
+                    __m256d fil = _mm256_loadu_pd(&filter_data[filter_offset + c]);
+                    sum = _mm256_add_pd(sum, _mm256_mul_pd(in, fil));
+                }
+
+                double temp[4];
+                _mm256_storeu_pd(temp, sum);
+                result += temp[0] + temp[1] + temp[2] + temp[3];
+#endif
+                for (; c < channels; ++c)
+                {
+                    result += input_data[input_offset + c] * filter_data[filter_offset + c];
                 }
             }
         }
@@ -147,6 +175,7 @@ Tensor convolutional_neural_network::convolve_3d(const Tensor &input, const std:
 
     Tensor output(std::vector<size_t>{out_h, out_w, num_filters});
 
+#pragma omp parallel for collapse(3)
     for (size_t f = 0; f < num_filters; ++f)
     {
         for (size_t i = 0; i < out_h; ++i)
@@ -173,18 +202,23 @@ Tensor convolutional_neural_network::add_padding(const Tensor &input, size_t pad
     if (input.shape.size() != 2)
         throw std::invalid_argument("Input must be a 2D Tensor");
 
-    size_t new_h = input.shape[0] + 2 * pad;
-    size_t new_w = input.shape[1] + 2 * pad;
+    size_t old_h = input.shape[0];
+    size_t old_w = input.shape[1];
+    size_t new_h = old_h + 2 * pad;
+    size_t new_w = old_w + 2 * pad;
 
     Tensor padded(std::vector<size_t>{new_h, new_w});
-    padded.fill(0.0);
 
-    for (size_t i = 0; i < input.shape[0]; ++i)
+    const double *src = input.data.data();
+    double *dst = padded.data.data();
+
+    std::fill(dst, dst + padded.numel(), 0.0);
+
+    for (size_t i = 0; i < old_h; ++i)
     {
-        for (size_t j = 0; j < input.shape[1]; ++j)
-        {
-            padded.at({i + pad, j + pad}) = input.at({i, j});
-        }
+        size_t src_offset = i * old_w;
+        size_t dst_offset = (i + pad) * new_w + pad;
+        std::memcpy(&dst[dst_offset], &src[src_offset], old_w * sizeof(double));
     }
 
     return padded;
@@ -205,21 +239,28 @@ Tensor convolutional_neural_network::max_pool(const Tensor &input, size_t pool_s
 
     Tensor output(std::vector<size_t>{out_h, out_w});
 
+    const double *input_data = input.data.data();
+    double *output_data = output.data.data();
+    size_t input_w = input.shape[1];
+
     for (size_t i = 0; i < out_h; ++i)
     {
         for (size_t j = 0; j < out_w; ++j)
         {
             double max_val = -std::numeric_limits<double>::infinity();
+            size_t base_row = i * stride;
+            size_t base_col = j * stride;
 
             for (size_t pi = 0; pi < pool_size; ++pi)
             {
+                size_t row_offset = (base_row + pi) * input_w;
                 for (size_t pj = 0; pj < pool_size; ++pj)
                 {
-                    max_val = std::max(max_val, input.at({i * stride + pi, j * stride + pj}));
+                    max_val = std::max(max_val, input_data[row_offset + base_col + pj]);
                 }
             }
 
-            output.at({i, j}) = max_val;
+            output_data[i * out_w + j] = max_val;
         }
     }
 

@@ -1,9 +1,16 @@
 #include <string>
+#include <vector>
+#include <cstring>
 #include <stdexcept>
+#include <execution>
 #include <algorithm>
 #include <filesystem>
 #include <unordered_map>
 #include <functional>
+
+#ifdef __AVX2__
+#include <immintrin.h>
+#endif
 
 #include "stb_image.h"
 #include "stb_image_write.h"
@@ -33,8 +40,7 @@ Tensor image_extractor::load_image(const std::string &filepath, int desired_chan
         static_cast<size_t>(width),
         static_cast<size_t>(actual_channels)});
 
-    for (size_t i = 0; i < tensor.numel(); ++i)
-        tensor.data[i] = data[i];
+    std::memcpy(tensor.data.data(), data, tensor.numel() * sizeof(unsigned char));
 
     stbi_image_free(data);
 
@@ -55,9 +61,31 @@ bool image_extractor::save_image(const std::string &filepath, const Tensor &tens
     size_t channels = tensor.shape[2];
 
     std::vector<unsigned char> data(tensor.numel());
+    const size_t num_elements = tensor.numel();
 
-    for (size_t i = 0; i < tensor.numel(); ++i)
-        data[i] = static_cast<unsigned char>(std::clamp(tensor.data[i], 0.0, 255.0));
+    const double *src = tensor.data.data();
+    unsigned char *dst = data.data();
+
+    size_t i = 0;
+
+#ifdef __AVX2__
+    for (; i + 4 <= num_elements; i += 4)
+    {
+        __m256d v = _mm256_loadu_pd(&src[i]);
+        __m128i v_int = _mm256_cvtpd_epi32(v);
+
+        int temp[4];
+        _mm_storeu_si128((__m128i *)temp, v_int);
+
+        dst[i] = static_cast<unsigned char>(temp[0]);
+        dst[i + 1] = static_cast<unsigned char>(temp[1]);
+        dst[i + 2] = static_cast<unsigned char>(temp[2]);
+        dst[i + 3] = static_cast<unsigned char>(temp[3]);
+    }
+#endif
+
+    for (; i < num_elements; ++i)
+        dst[i] = static_cast<unsigned char>(src[i]);
 
     std::string ext = std::filesystem::path(filepath).extension().string();
 
@@ -91,8 +119,9 @@ bool image_extractor::save_image(const std::string &filepath, const Tensor &tens
 /// @param tensor The tensor to normalize
 void image_extractor::normalize(Tensor &tensor)
 {
-    for (auto &val : tensor.data)
-        val /= 255.0;
+    std::transform(tensor.data.begin(), tensor.data.end(), tensor.data.begin(),
+                   [](double val)
+                   { return val / 255.0; });
 }
 
 /// @brief Resize image to target dimensions
@@ -111,8 +140,11 @@ Tensor image_extractor::resize(const Tensor &tensor, size_t target_h, size_t tar
 
     std::vector<unsigned char> src_data(tensor.numel());
 
-    for (size_t i = 0; i < tensor.numel(); ++i)
-        src_data[i] = static_cast<unsigned char>(std::clamp(tensor.data[i], 0.0, 255.0));
+    std::transform(std::execution::par_unseq,
+                   tensor.data.begin(), tensor.data.end(),
+                   src_data.begin(),
+                   [](double val)
+                   { return static_cast<unsigned char>(val); });
 
     std::vector<unsigned char> dst_data(target_h * target_w * channels);
 
@@ -123,8 +155,7 @@ Tensor image_extractor::resize(const Tensor &tensor, size_t target_h, size_t tar
 
     Tensor resized(std::vector<size_t>{target_h, target_w, channels});
 
-    for (size_t i = 0; i < resized.numel(); ++i)
-        resized.data[i] = dst_data[i];
+    std::memcpy(resized.data.data(), dst_data.data(), resized.numel() * sizeof(unsigned char));
 
     return resized;
 }
