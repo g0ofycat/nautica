@@ -41,7 +41,7 @@ public:
     /// @param stride Stride for the convolution
     /// @param divisor Divisor for normalization
     /// @return Convolved output tensor
-    static Tensor convolve_2d(const Tensor &input, const std::vector<int> &kernel, size_t kernel_size, size_t stride, int divisor = 1);
+    static Tensor convolve_2d(const Tensor &input, const std::vector<int> &kernel, size_t kernel_size, size_t stride = 1, int divisor = 1);
 
     /// @brief Perform 3D convolution (handles multi-channel input)
     /// @param input Input tensor (H x W x C_in)
