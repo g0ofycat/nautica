@@ -1,17 +1,16 @@
 #ifndef TENSOR_HPP
 #define TENSOR_HPP
 
+#include <cstddef>
 #include <iostream>
 #include <vector>
-#include <cstddef>
 
 #include "../utility/nn_utility.hpp"
 
 // ====== Tensor ======
 
-class Tensor
-{
-public:
+class Tensor {
+  public:
     // ====== PUBLIC DATA ======
 
     std::vector<size_t> shape;

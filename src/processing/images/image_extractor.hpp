@@ -3,14 +3,13 @@
 
 #include <string>
 
-#include "image_processing/stb_image.h"
 #include "../../neural_networks/tensors/tensor.hpp"
+#include "image_processing/stb_image.h"
 
 // ====== image_extractor ======
 
-class image_extractor
-{
-public:
+class image_extractor {
+  public:
     // ====== PUBLIC FUNCTIONS ======
 
     /// @brief Load an image file into a 3D tensor (H x W x C)

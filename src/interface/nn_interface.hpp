@@ -9,9 +9,8 @@
 
 // ====== nn_interface ======
 
-class nn_interface
-{
-public:
+class nn_interface {
+  public:
     // ====== PUBLIC FUNCTIONS ======
 
     /// @brief Convolute an image given a path and number of convolutions (RGB)

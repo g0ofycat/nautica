@@ -10,9 +10,8 @@ class Tensor;
 
 // ====== nn_utility ======
 
-class nn_utility
-{
-public:
+class nn_utility {
+  public:
     // ====== MAIN ======
 
     /// @brief Get RNG Device

@@ -3,10 +3,6 @@
 
 // ====== ENUMS ======
 
-enum class train_type
-{
-    classification,
-    regression
-};
+enum class train_type { classification, regression };
 
 #endif

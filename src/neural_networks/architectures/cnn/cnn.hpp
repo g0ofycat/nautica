@@ -4,14 +4,13 @@
 #include <cstddef>
 #include <vector>
 
-#include "../tensors/tensor.hpp"
 #include "../../utility/nn_utility.hpp"
+#include "../tensors/tensor.hpp"
 
 // ====== convolutional_neural_network ======
 
-class convolutional_neural_network
-{
-public:
+class convolutional_neural_network {
+  public:
     // ====== PUBLIC FUNCTIONS ======
 
     /// @brief Apply a convolutional kernel to the input tensor
@@ -22,7 +21,8 @@ public:
     /// @param col Column index
     /// @param divisor Divisor for normalization
     /// @return Result of applying the kernel
-    static float apply_kernel(const Tensor &input, const std::vector<int> &kernel, size_t kernel_size, size_t row, size_t col, int divisor);
+    static float apply_kernel(const Tensor &input, const std::vector<int> &kernel, size_t kernel_size, size_t row,
+                              size_t col, int divisor);
 
     /// @brief Apply one 3D filter at a specific position
     /// @param input Input tensor (H x W x C_in)
@@ -39,7 +39,8 @@ public:
     /// @param stride Stride for the convolution
     /// @param divisor Divisor for normalization
     /// @return Convolved output tensor
-    static Tensor convolve_2d(const Tensor &input, const std::vector<int> &kernel, size_t kernel_size, size_t stride = 1, int divisor = 1);
+    static Tensor convolve_2d(const Tensor &input, const std::vector<int> &kernel, size_t kernel_size,
+                              size_t stride = 1, int divisor = 1);
 
     /// @brief Perform 3D convolution (handles multi-channel input)
     /// @param input Input tensor (H x W x C_in)
