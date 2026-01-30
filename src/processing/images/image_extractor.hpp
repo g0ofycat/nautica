@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include "../../dependencies/stb_image.h"
+#include "image_processing/stb_image.h"
 #include "../../neural_networks/tensors/tensor.hpp"
 
 // ====== image_extractor ======
