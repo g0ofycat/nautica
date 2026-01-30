@@ -19,14 +19,21 @@ Tensor nn_interface::convolute_image(const std::string &image_path, size_t convo
     Tensor image_tensor = image_extractor::load_image(image_path);
     image_extractor::normalize(image_tensor);
 
-    std::vector<Tensor> filters(convolutions);
+    Tensor result = image_tensor;
+
+    for (size_t conv_idx = 0; conv_idx < convolutions; ++conv_idx) {
+        size_t in_channels = result.shape[2];
+        std::vector<Tensor> filters(3);
 
 #pragma omp parallel for
-    for (size_t i = 0; i < convolutions; ++i) {
-        filters[i] = Tensor::random_normal({3, 3, 3});
+        for (size_t i = 0; i < 3; ++i) {
+            filters[i] = Tensor::random_normal({3, 3, in_channels});
+        }
+
+        result = convolutional_neural_network::convolve_3d(result, filters);
     }
 
-    return convolutional_neural_network::convolve_3d(image_tensor, filters);
+    return result;
 }
 
 /// @brief Apply multiple 2D convolutions with randomly selected kernels

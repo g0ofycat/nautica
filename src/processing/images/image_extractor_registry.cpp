@@ -130,11 +130,8 @@ Tensor image_extractor::resize(const Tensor &tensor, size_t target_h, size_t tar
 
     std::vector<unsigned char> src(tensor.numel());
 
-    for (size_t i = 0; i < src.size(); ++i) {
-        double v = tensor.data[i];
-        v = std::clamp(v, 0.0, 1.0);
-        src[i] = static_cast<unsigned char>(v * 255.0);
-    }
+    std::transform(tensor.data.begin(), tensor.data.end(), src.begin(),
+                   [](double v) { return static_cast<unsigned char>(std::clamp(v, 0.0, 1.0) * 255.0); });
 
     std::vector<unsigned char> dst(target_h * target_w * channels);
 
@@ -143,8 +140,7 @@ Tensor image_extractor::resize(const Tensor &tensor, size_t target_h, size_t tar
 
     Tensor resized(std::vector<size_t>{target_h, target_w, channels});
 
-    for (size_t i = 0; i < resized.numel(); ++i)
-        resized.data[i] = static_cast<double>(dst[i]) / 255.0;
+    image_extractor::normalize(resized);
 
     return resized;
 }
