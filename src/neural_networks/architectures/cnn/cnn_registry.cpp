@@ -21,12 +21,12 @@
 /// @param col Column index
 /// @param divisor Divisor for normalization
 /// @return Result of applying the kernel
-float convolutional_neural_network::apply_kernel(const Tensor &input, const std::vector<int> &kernel,
-                                                 size_t kernel_size, size_t row, size_t col, int divisor) {
+double convolutional_neural_network::apply_kernel(const Tensor &input, const std::vector<int> &kernel,
+                                                  size_t kernel_size, size_t row, size_t col, double divisor) {
     if (input.shape.size() != 2)
         throw std::invalid_argument("Input must be a 2D Tensor");
 
-    float result = 0.0f;
+    double result = 0.0;
 
     size_t half_kernel = kernel_size / 2;
 
@@ -43,7 +43,7 @@ float convolutional_neural_network::apply_kernel(const Tensor &input, const std:
         }
     }
 
-    return divisor != 0 ? result / static_cast<float>(divisor) : result;
+    return divisor != 0 ? result / divisor : result;
 }
 
 /// @brief Apply one 3D filter at a specific position
@@ -51,9 +51,10 @@ float convolutional_neural_network::apply_kernel(const Tensor &input, const std:
 /// @param filter Filter tensor (K x K x C_in)
 /// @param row Starting row position
 /// @param col Starting column position
+/// @param divisor Divisor for normalization
 /// @return Convolution result (single value)
-double convolutional_neural_network::apply_filter_3d(const Tensor &input, const Tensor &filter, size_t row,
-                                                     size_t col) {
+double convolutional_neural_network::apply_filter_3d(const Tensor &input, const Tensor &filter, size_t row, size_t col,
+                                                     double divisor) {
     if (input.shape.size() != 3 || filter.shape.size() != 3)
         throw std::invalid_argument("Input and filter must be 3D");
 
@@ -108,7 +109,7 @@ double convolutional_neural_network::apply_filter_3d(const Tensor &input, const 
         }
     }
 
-    return result;
+    return divisor != 0.0 ? result / divisor : result;
 }
 
 /// @brief Perform 2D convolution on input tensor
@@ -119,7 +120,7 @@ double convolutional_neural_network::apply_filter_3d(const Tensor &input, const 
 /// @param divisor Divisor for normalization
 /// @return Convolved output tensor
 Tensor convolutional_neural_network::convolve_2d(const Tensor &input, const std::vector<int> &kernel,
-                                                 size_t kernel_size, size_t stride, int divisor) {
+                                                 size_t kernel_size, size_t stride, double divisor) {
     if (input.shape.size() != 2)
         throw std::invalid_argument("Input must be a 2D Tensor");
 
@@ -144,9 +145,10 @@ Tensor convolutional_neural_network::convolve_2d(const Tensor &input, const std:
 /// @param input Input tensor (H x W x C_in)
 /// @param filters Vector of filters, each (K x K x C_in)
 /// @param stride Stride for convolution
+/// @param divisor Divisor for normalization
 /// @return Output tensor (H_out x W_out x num_filters)
-Tensor convolutional_neural_network::convolve_3d(const Tensor &input, const std::vector<Tensor> &filters,
-                                                 size_t stride) {
+Tensor convolutional_neural_network::convolve_3d(const Tensor &input, const std::vector<Tensor> &filters, size_t stride,
+                                                 double divisor) {
     if (input.shape.size() != 3)
         throw std::invalid_argument("Input must be 3D (H x W x C)");
 
@@ -170,7 +172,7 @@ Tensor convolutional_neural_network::convolve_3d(const Tensor &input, const std:
                 size_t in_row = i * stride;
                 size_t in_col = j * stride;
 
-                output.at({i, j, f}) = apply_filter_3d(input, filters[f], in_row, in_col);
+                output.at({i, j, f}) = apply_filter_3d(input, filters[f], in_row, in_col, divisor);
             }
         }
     }
