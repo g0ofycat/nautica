@@ -5,8 +5,6 @@
 #include <string>
 #include <vector>
 
-#include "../processing/images/image_extractor.hpp"
-#include "../neural_networks/architectures/cnn/cnn.hpp"
 #include "../neural_networks/tensors/tensor.hpp"
 
 // ====== nn_interface ======

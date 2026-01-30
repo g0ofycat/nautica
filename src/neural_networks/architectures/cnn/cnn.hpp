@@ -4,10 +4,8 @@
 #include <cstddef>
 #include <vector>
 
-#include "./kernels/kernels.hpp"
 #include "../tensors/tensor.hpp"
 #include "../../utility/nn_utility.hpp"
-#include "../../enums/nn_enums.hpp"
 
 // ====== convolutional_neural_network ======
 

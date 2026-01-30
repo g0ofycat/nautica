@@ -3,11 +3,7 @@
 
 #include <iostream>
 #include <vector>
-#include <string>
-#include <functional>
 #include <cstddef>
-#include <random>
-#include <numeric>
 
 #include "../utility/nn_utility.hpp"
 

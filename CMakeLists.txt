@@ -29,6 +29,8 @@ target_compile_options(main PRIVATE -fverbose-asm -save-temps=obj)
 target_include_directories(main PRIVATE
     src/neural_networks
     src/neural_networks/architectures
+    src/neural_networks/architectures/cnn
+    src/neural_networks/architectures/cnn/kernels
     src/neural_networks/enums
     src/neural_networks/tensors
     src/neural_networks/utility
@@ -62,6 +64,8 @@ add_executable(bench
 target_include_directories(bench PRIVATE
     src/neural_networks
     src/neural_networks/architectures
+    src/neural_networks/architectures/cnn
+    src/neural_networks/architectures/cnn/kernels
     src/neural_networks/enums
     src/neural_networks/tensors
     src/neural_networks/utility

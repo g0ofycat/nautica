@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "./nn_interface.hpp"
+#include "../neural_networks/architectures/cnn/kernels/kernels.hpp"
 #include "../processing/images/image_extractor.hpp"
 #include "../neural_networks/architectures/cnn/cnn.hpp"
 #include "../neural_networks/tensors/tensor.hpp"

@@ -2,6 +2,7 @@
 #define NN_UTILITY_HPP
 
 #include <random>
+#include <vector>
 
 // ====== FORWARD DECLARATIONS ======
 
@@ -34,6 +35,12 @@ public:
     /// @param logits The logits to softmax
     /// @param output The tensor to output the results to
     static void softmax_inplace(const Tensor &logits, Tensor &output);
+
+    /// @brief Cross-Entropy Loss Calculation
+    /// @param output The output probabilities
+    /// @param target The target probabilities
+    /// @return The computed cross-entropy loss
+    static double cross_entropy_loss(const std::vector<double> &output, const std::vector<double> &target);
 };
 
 #endif

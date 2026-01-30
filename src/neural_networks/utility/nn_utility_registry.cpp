@@ -2,6 +2,7 @@
 #include <cmath>
 #include <vector>
 #include <algorithm>
+#include <vector>
 
 #include "./nn_utility.hpp"
 #include "../tensors/tensor.hpp"
@@ -51,4 +52,25 @@ void nn_utility::softmax_inplace(const Tensor &logits, Tensor &output)
 
     for (auto &v : output.data)
         v /= sum_exp;
+}
+
+/// @brief Cross-Entropy Loss Calculation
+/// @param output The output probabilities
+/// @param target The target probabilities
+/// @return The computed cross-entropy loss
+double nn_utility::cross_entropy_loss(const std::vector<double> &output, const std::vector<double> &target)
+{
+    if (output.size() != target.size())
+    {
+        throw std::invalid_argument("Output and target sizes do not match for Cross-Entropy calculation.");
+    }
+
+    double loss = 0.0;
+
+    for (size_t i = 0; i < output.size(); ++i)
+    {
+        loss -= target[i] * std::log(output[i] + 1e-15);
+    }
+
+    return loss / static_cast<double>(output.size());
 }
