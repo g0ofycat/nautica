@@ -28,6 +28,10 @@ class image_extractor {
     /// @param tensor The tensor to normalize
     static void normalize(Tensor &tensor);
 
+    /// @brief Denormalize pixel values from [0, 1] to [0, 255]
+    /// @param tensor The tensor to denormalize
+    static void denormalize(Tensor &tensor);
+
     /// @brief Resize image to target dimensions
     /// @param tensor Input tensor
     /// @param target_h Target height

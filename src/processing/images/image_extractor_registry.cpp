@@ -109,6 +109,12 @@ void image_extractor::normalize(Tensor &tensor) {
     std::transform(tensor.data.begin(), tensor.data.end(), tensor.data.begin(), [](double val) { return val / 255.0; });
 }
 
+/// @brief Denormalize pixel values from [0, 1] to [0, 255]
+/// @param tensor The tensor to denormalize
+void image_extractor::denormalize(Tensor &tensor) {
+    std::transform(tensor.data.begin(), tensor.data.end(), tensor.data.begin(), [](double val) { return val * 255.0; });
+}
+
 /// @brief Resize image to target dimensions
 /// @param tensor Input tensor
 /// @param target_h Target height
