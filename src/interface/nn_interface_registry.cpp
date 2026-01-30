@@ -50,7 +50,7 @@ Tensor nn_interface::convolute_image(const std::string &image_path, const size_t
         } else {
 #pragma omp parallel for
             for (size_t i = 0; i < 3; ++i) {
-                filters[i] = Tensor::random_normal({3, 3, in_channels}, 0.0, 0.1);
+                filters[i] = Tensor::random_normal({3, 3, in_channels});
             }
         }
 
