@@ -17,8 +17,8 @@
 /// @param convolutions How many convolution layers to apply
 /// @param kernel Optional Kernel to apply instead of a random normal 3x3x3 Tensor
 /// @return The convolved image tensor
-Tensor nn_interface::convolute_image(const std::string &image_path, size_t convolutions,
-                                     std::optional<std::vector<int>> kernel) {
+Tensor nn_interface::convolute_image(const std::string &image_path, const size_t convolutions,
+                                     const std::optional<std::vector<int>> kernel) {
     Tensor image_tensor = image_extractor::load_image(image_path);
     image_extractor::normalize(image_tensor);
 
@@ -65,7 +65,8 @@ Tensor nn_interface::convolute_image(const std::string &image_path, size_t convo
 /// @param convolutions Number of different kernels to apply
 /// @param stride Stride for convolution
 /// @return Vector of output feature maps (one per randomly selected kernel)
-std::vector<Tensor> nn_interface::convolute_tensor(const Tensor &input_tensor, size_t convolutions, size_t stride) {
+std::vector<Tensor> nn_interface::convolute_tensor(const Tensor &input_tensor, const size_t convolutions,
+                                                   const size_t stride) {
     std::vector<Tensor> results(convolutions);
     std::mt19937 &rng = nn_utility::get_rng();
     std::uniform_int_distribution<size_t> dist(0, Kernels::all_kernels.size() - 1);
