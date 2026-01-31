@@ -21,7 +21,7 @@ class convolutional_neural_network {
     /// @param col Column index
     /// @param divisor Divisor for normalization
     /// @return Result of applying the kernel
-    static double apply_kernel(const Tensor &input, const std::vector<int> &kernel, size_t kernel_size, size_t row,
+    static double apply_kernel(const Tensor &input, const std::vector<float> &kernel, size_t kernel_size, size_t row,
                                size_t col, double divisor = 1);
 
     /// @brief Apply one 3D filter at a specific position
@@ -41,7 +41,7 @@ class convolutional_neural_network {
     /// @param stride Stride for the convolution
     /// @param divisor Divisor for normalization
     /// @return Convolved output tensor
-    static Tensor convolve_2d(const Tensor &input, const std::vector<int> &kernel, size_t kernel_size,
+    static Tensor convolve_2d(const Tensor &input, const std::vector<float> &kernel, size_t kernel_size,
                               size_t stride = 1, double divisor = 1);
 
     /// @brief Perform 3D convolution (handles multi-channel input)

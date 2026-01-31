@@ -20,7 +20,7 @@ class nn_interface {
     /// @param kernel Optional Kernel to apply instead of a random normal 3x3x3 Tensor
     /// @return The convolved image tensor
     static Tensor convolute_image(const std::string &image_path, size_t convolutions,
-                                  const std::optional<std::vector<int>> kernel = std::nullopt);
+                                  const std::optional<std::vector<float>> kernel = std::nullopt);
 
     /// @brief Apply multiple 2D convolutions with randomly selected kernels
     /// @param input_tensor The input tensor (2D)

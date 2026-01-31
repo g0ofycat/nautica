@@ -19,7 +19,7 @@
 /// @param kernel Optional Kernel to apply instead of a random normal 3x3x3 Tensor
 /// @return The convolved image tensor
 Tensor nn_interface::convolute_image(const std::string &image_path, size_t convolutions,
-                                     const std::optional<std::vector<int>> kernel) {
+                                     const std::optional<std::vector<float>> kernel) {
     Tensor image_tensor = image_extractor::load_image(image_path);
     image_extractor::normalize(image_tensor);
 

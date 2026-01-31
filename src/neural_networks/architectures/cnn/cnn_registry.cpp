@@ -21,7 +21,7 @@
 /// @param col Column index
 /// @param divisor Divisor for normalization
 /// @return Result of applying the kernel
-double convolutional_neural_network::apply_kernel(const Tensor &input, const std::vector<int> &kernel,
+double convolutional_neural_network::apply_kernel(const Tensor &input, const std::vector<float> &kernel,
                                                   size_t kernel_size, size_t row, size_t col, double divisor) {
     if (input.shape.size() != 2)
         throw std::invalid_argument("Input must be a 2D Tensor");
@@ -119,7 +119,7 @@ double convolutional_neural_network::apply_filter_3d(const Tensor &input, const 
 /// @param stride Stride for the convolution
 /// @param divisor Divisor for normalization
 /// @return Convolved output tensor
-Tensor convolutional_neural_network::convolve_2d(const Tensor &input, const std::vector<int> &kernel,
+Tensor convolutional_neural_network::convolve_2d(const Tensor &input, const std::vector<float> &kernel,
                                                  size_t kernel_size, size_t stride, double divisor) {
     if (input.shape.size() != 2)
         throw std::invalid_argument("Input must be a 2D Tensor");
