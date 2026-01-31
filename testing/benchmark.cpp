@@ -27,7 +27,7 @@ BENCHMARK_MAIN();
 */
 
 int main() {
-    Tensor img_tensor_conv = nn_interface::convolute_image("testing/images/img_1.jpg", 1, Kernels::unsharp_mask);
+    Tensor img_tensor_conv = nn_interface::convolute_image("testing/images/img_1.jpg", 1, Kernels::gaussian_5x5);
 
     image_extractor::denormalize(img_tensor_conv);
     image_extractor::save_image("testing/images/img_1_conv.jpg", img_tensor_conv);

@@ -124,6 +124,9 @@ Tensor convolutional_neural_network::convolve_2d(const Tensor &input, const std:
     if (input.shape.size() != 2)
         throw std::invalid_argument("Input must be a 2D Tensor");
 
+    if (input.shape[0] < kernel_size || input.shape[1] < kernel_size)
+        throw std::invalid_argument("Input dimensions must be >= kernel size");
+
     size_t out_h = (input.shape[0] - kernel_size) / stride + 1;
     size_t out_w = (input.shape[1] - kernel_size) / stride + 1;
 
@@ -155,8 +158,17 @@ Tensor convolutional_neural_network::convolve_3d(const Tensor &input, const std:
     if (filters.empty())
         throw std::invalid_argument("Must provide at least one filter");
 
+    if (filters[0].shape.size() != 3)
+        throw std::invalid_argument("Filters must be 3D");
+
+    if (filters[0].shape[2] != input.shape[2])
+        throw std::invalid_argument("Filter channels must match input");
+
     size_t kernel_h = filters[0].shape[0];
     size_t kernel_w = filters[0].shape[1];
+
+    if (input.shape[0] < kernel_h || input.shape[1] < kernel_w)
+        throw std::invalid_argument("Input dimensions must be >= kernel size");
 
     size_t num_filters = filters.size();
 
@@ -217,6 +229,9 @@ Tensor convolutional_neural_network::add_padding(const Tensor &input, size_t pad
 Tensor convolutional_neural_network::max_pool(const Tensor &input, size_t pool_size, size_t stride) {
     if (input.shape.size() != 2)
         throw std::invalid_argument("Input must be a 2D Tensor");
+
+    if (input.shape[0] < pool_size || input.shape[1] < pool_size)
+        throw std::invalid_argument("Input dimensions must be >= pool size");
 
     size_t out_h = (input.shape[0] - pool_size) / stride + 1;
     size_t out_w = (input.shape[1] - pool_size) / stride + 1;
